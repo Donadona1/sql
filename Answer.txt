@@ -1,0 +1,87 @@
+DROP TABLE routes;
+CREATE TABLE routes(
+    route_id INT UNIQUE, 
+    flight_num INT CHECK(flight_num > 0), 
+    origin_airport VARCHAR, 
+    destination_airport VARCHAR, 
+    aircraft_id VARCHAR,
+    distance_miles INT CHECK(distance_miles > 0) 
+);
+
+SELECT CONCAT(c.first_name, " ", c.last_name) as name FROM passengers_on_flights p LEFT JOIN customer c ON(c.customer_id=p.customer_id) WHERE `route_id` BETWEEN 1 AND 25;
+
+SELECT COUNT(customer_id) AS number_of_passengers, SUM(Price_per_ticket)AS total_revenue FROM ticket_details WHERE class_id='Bussiness';
+
+SELECT CONCAT(c.first_name, ' ', c.last_name) as full_name from customer c;
+
+SELECT DISTINCT(c.customer_id), c.first_name FROM ticket_details t LEFT JOIN customer c ON (c.customer_id = t.customer_id) WHERE t.customer_id IS NOT NULL;
+
+SELECT CONCAT(C.first_name, ' ', C.last_name) as customer from customer c LEFT JOIN ticket_details t on (c.customer_id = t.customer_id) where t.brand = 'Emirates';
+
+SELECT COUNT(customer_id) AS total_customer FROM passengers_on_flights GROUP BY class_id HAVING class_id="Economy Plus";
+
+SELECT IF(SUM(Price_per_ticket)>10000,"Revenue has Crossed 10000", "Revenue has not Crossed not 10000") AS Revenue_dtls FROM ticket_details;
+
+USE `air_cargo`;
+GRANT ALL ON *.* TO 'new_user'@'localhost';
+
+SELECT class_id , MAX(Price_per_ticket) OVER(PARTITION BY class_id) AS Max_Price FROM ticket_details;
+
+SELECT customer_id FROM passengers_on_flights WHERE route_id=4;
+
+EXPLAIN SELECT * FROM passengers_on_flights WHERE route_id=4;
+
+SELECT customer_id, aircraft_id, SUM(Price_per_ticket) AS total_price_of_tickets FROM ticket_details GROUP BY customer_id, aircraft_id WITH ROLLUP;
+
+CREATE VIEW business_class AS SELECT customer_id, brand FROM ticket_details WHERE class_id='Bussiness';
+SELECT * FROM business_class;
+
+
+Table Customer {
+  customer_id integer  [primary key]
+  first_name varchar
+  last_name varchar
+  date_of_birth date
+  gender varchar
+}
+
+
+Table passengers_on_flights {
+  customer_id integer
+  aircraft_id varchar
+  route_id integer
+  depart varchar
+  arrival varchar
+  seat_num varchar
+  class_id varchar
+  travel_date date
+  flight_num integer
+}
+
+Table routes {
+  route_id integer
+  flight_num integer
+  origin_airport varchar
+  destination_airport varchar
+  aircraft_id varchar
+  distance_miles integer
+}
+
+Table ticket_details {
+  p_date varchar
+  customer_id integer
+  aircraft_id varchar
+  class_id varchar
+  no_of_tickets varchar
+  a_code varchar
+  Price_per_ticket integer
+  brand varchar
+}
+
+
+
+Ref: "Customer"."customer_id" < "passengers_on_flights"."customer_id"
+
+Ref: "routes"."route_id" < "passengers_on_flights"."route_id"
+
+Ref: "Customer"."customer_id" < "ticket_details"."customer_id"
